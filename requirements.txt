@@ -1,0 +1,5 @@
+python-telegram-bot>=20.0
+py-clob-client
+python-dotenv
+requests
+supabase

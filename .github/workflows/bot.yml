@@ -1,0 +1,41 @@
+name: Polymarket Trading Bot
+
+on:
+  workflow_dispatch:  # manual trigger only
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360  # safety net — bot self-exits at 350 min
+
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      AUTHORIZED_USER_ID: ${{ secrets.AUTHORIZED_USER_ID }}
+      SUPABASE_URL:       ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY:       ${{ secrets.SUPABASE_KEY }}
+      PRIVATE_KEY:        ${{ secrets.PRIVATE_KEY }}
+      FUNDER_ADDRESS:     ${{ secrets.FUNDER_ADDRESS }}
+      SIGNATURE_TYPE:     "1"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Telegram bot
+        run: python bot.py
+
+      - name: Auto-restart bot for continuous server loop
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Triggering the next 6-hour run..."
+          gh workflow run "Polymarket Trading Bot"
