@@ -35,7 +35,7 @@ jobs:
       - name: Auto-restart bot for continuous server loop
         if: always()
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           echo "Triggering the next 6-hour run..."
           gh workflow run "Polymarket Trading Bot"
